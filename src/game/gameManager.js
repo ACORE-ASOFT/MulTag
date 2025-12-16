@@ -10,7 +10,7 @@ window.FILE_MANIFEST.push({
  * Main game manager
  */
 window.GameManager = class {
-  constructor() {
+  constructor(playerCount = 2) {
     this.players = [];
     this.powerups = [];
     this.platforms = [];
@@ -18,6 +18,7 @@ window.GameManager = class {
     this.gameMode = window.GAME.MODE_CLASSIC;
     this.roundTime = window.TAG.ROUND_TIME;
     this.isPaused = false;
+    this.playerCount = Math.min(Math.max(playerCount, 2), 4); // Ensure 2-4 players
     
     this.physics = new window.PhysicsEngine();
     this.lastTagTime = 0;
@@ -40,12 +41,12 @@ window.GameManager = class {
       { x: 1720, y: 800 }
     ];
 
-    for (let i = 0; i < window.GAME.MAX_PLAYERS; i++) {
+    for (let i = 0; i < this.playerCount; i++) {
       const player = new window.Player(
         positions[i].x,
         positions[i].y,
         i, // playerIndex
-        i >= 2 // isAI - first 2 are human, rest are AI
+        false // All players are human now
       );
       player.score = 0;
       this.players.push(player);
@@ -104,13 +105,9 @@ window.GameManager = class {
       return;
     }
 
-    // Update players
+    // Update all human players
     this.players.forEach(player => {
-      if (player.isAI) {
-        this.updateAI(player, dt);
-      } else {
-        player.update(dt);
-      }
+      player.update(dt);
       this.checkPlatformCollisions(player);
       this.keepPlayerInBounds(player);
     });
@@ -135,55 +132,6 @@ window.GameManager = class {
 
     // Update powerups
     this.updatePowerups(dt);
-  }
-
-  updateAI(player, dt) {
-    // Simple AI: move towards nearest untagged player or run away if tagged
-    let target = null;
-    let minDist = Infinity;
-
-    this.players.forEach(other => {
-      if (other.id === player.id) return;
-      
-      const dist = window.distance(player.x, player.y, other.x, other.y);
-      
-      if (player.isTagged && !other.isTagged) {
-        // Run away from untagged players
-        if (dist < minDist) {
-          minDist = dist;
-          target = other;
-        }
-      } else if (!player.isTagged && other.isTagged) {
-        // Chase tagged players
-        if (dist < minDist) {
-          minDist = dist;
-          target = other;
-        }
-      }
-    });
-
-    if (target) {
-      const dx = target.x - player.x;
-      const dy = target.y - player.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-
-      if (dist > 0) {
-        if (player.isTagged) {
-          // Run away
-          player.ax = -(dx / dist) * window.PLAYER.SPEED;
-        } else {
-          // Chase
-          player.ax = (dx / dist) * window.PLAYER.SPEED;
-        }
-      }
-
-      // Jump randomly
-      if (Math.random() < 0.02 && player.isGrounded) {
-        player.vy = -window.PLAYER.JUMP_POWER;
-      }
-    }
-
-    this.physics.applyPhysics(player, dt);
   }
 
   checkPlayerCollisions() {
@@ -215,6 +163,11 @@ window.GameManager = class {
     tagger.setTagged(false);
     tagger.score += window.TAG.POINTS_TAG;
     this.lastTagTime = now;
+    
+    // Play tag sound
+    if (window.soundManager) {
+      window.soundManager.play('tag');
+    }
   }
 
   checkPlatformCollisions(player) {
@@ -288,6 +241,11 @@ window.GameManager = class {
   applyPowerup(player, powerup) {
     player.score += window.TAG.POINTS_POWERUP;
     
+    // Play powerup sound
+    if (window.soundManager) {
+      window.soundManager.play('powerup');
+    }
+    
     switch (powerup.type) {
       case window.POWERUP.SPEED:
         player.speed = window.PLAYER.SPEED * window.POWERUP.SPEED_MULTIPLIER;
@@ -311,6 +269,11 @@ window.GameManager = class {
       }
     });
     
+    // Play victory sound
+    if (window.soundManager) {
+      window.soundManager.play('victory');
+    }
+    
     console.log('Game Over! Winner: Player', winner.id + 1, 'with', winner.score, 'points');
   }
 
@@ -333,18 +296,6 @@ window.GameManager = class {
     // Draw players
     this.players.forEach(player => {
       player.draw();
-      
-      // Draw AI indicator
-      if (player.isAI) {
-        window.renderer.drawText(
-          'AI',
-          player.x + player.width / 2 - 10,
-          player.y - 10,
-          '#FFFFFF',
-          12,
-          'Arial'
-        );
-      }
     });
 
     // Draw UI
@@ -375,6 +326,16 @@ window.GameManager = class {
       );
     });
 
+    // Draw player controls help
+    window.renderer.drawText(
+      'P1: Arrows | P2: WASD | P3: TFGH | P4: IJKL',
+      window.GAME.CANVAS_WIDTH / 2 - 200,
+      window.GAME.CANVAS_HEIGHT - 30,
+      '#888888',
+      14,
+      'Arial'
+    );
+
     // Draw game over
     if (this.gameState === 'gameover') {
       window.renderer.drawText(
@@ -386,5 +347,25 @@ window.GameManager = class {
         'Arial'
       );
     }
+  }
+
+  /**
+   * Set player count and restart game
+   * @param {number} count - Number of players (2-4)
+   */
+  setPlayerCount(count) {
+    this.playerCount = Math.min(Math.max(count, 2), 4);
+    this.players = [];
+    this.powerups = [];
+    this.init();
+  }
+
+  /**
+   * Restart game with current player count
+   */
+  restart() {
+    this.players = [];
+    this.powerups = [];
+    this.init();
   }
 };

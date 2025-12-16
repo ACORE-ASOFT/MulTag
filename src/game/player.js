@@ -75,6 +75,8 @@ window.Player = class {
    * @param {number} dt - Delta time in seconds
    */
   update(dt) {
+    const wasGrounded = this.isGrounded;
+    
     // Handle input
     this.handleInput(dt);
     
@@ -89,6 +91,11 @@ window.Player = class {
       this.y = window.GAME.CANVAS_HEIGHT - this.height - 10;
       this.vy = 0;
       this.isGrounded = true;
+      
+      // Play land sound when hitting ground
+      if (!wasGrounded && window.soundManager) {
+        window.soundManager.play('land');
+      }
     } else {
       this.isGrounded = false;
     }
@@ -137,44 +144,89 @@ window.Player = class {
   }
 
   /**
-   * Handle keyboard input
+   * Handle keyboard input for 4 players
    * @param {number} dt - Delta time in seconds
    */
   handleInput(dt) {
     // Skip input for AI players
     if (this.isAI) return;
     
-    // Player 1 controls (Arrow keys and WASD)
+    // Reset acceleration
+    this.ax = 0;
+    
+    // Player 1 controls (Arrow keys)
     if (this.id === 0 || this.id === undefined) {
-      // Horizontal movement
-      if (window.input.isKeyPressed('ArrowLeft') || window.input.isKeyPressed('a')) {
+      if (window.input.isKeyPressed('ArrowLeft')) {
         this.ax = -this.speed;
       }
-      if (window.input.isKeyPressed('ArrowRight') || window.input.isKeyPressed('d')) {
+      if (window.input.isKeyPressed('ArrowRight')) {
         this.ax = this.speed;
       }
-      
-      // Jump
-      if ((window.input.isKeyPressed(' ') || window.input.isKeyPressed('ArrowUp') || window.input.isKeyPressed('w')) && this.isGrounded) {
+      if ((window.input.isKeyPressed('ArrowUp') || window.input.isKeyPressed(' ')) && this.isGrounded) {
         this.vy = -this.jumpPower;
         this.isGrounded = false;
+        
+        // Play jump sound
+        if (window.soundManager) {
+          window.soundManager.play('jump');
+        }
       }
     }
     
-    // Player 2 controls (IJKL and O)
+    // Player 2 controls (WASD)
     if (this.id === 1) {
-      // Horizontal movement
+      if (window.input.isKeyPressed('a') || window.input.isKeyPressed('A')) {
+        this.ax = -this.speed;
+      }
+      if (window.input.isKeyPressed('d') || window.input.isKeyPressed('D')) {
+        this.ax = this.speed;
+      }
+      if ((window.input.isKeyPressed('w') || window.input.isKeyPressed('W')) && this.isGrounded) {
+        this.vy = -this.jumpPower;
+        this.isGrounded = false;
+        
+        // Play jump sound
+        if (window.soundManager) {
+          window.soundManager.play('jump');
+        }
+      }
+    }
+    
+    // Player 3 controls (TFGH)
+    if (this.id === 2) {
+      if (window.input.isKeyPressed('f') || window.input.isKeyPressed('F')) {
+        this.ax = -this.speed;
+      }
+      if (window.input.isKeyPressed('h') || window.input.isKeyPressed('H')) {
+        this.ax = this.speed;
+      }
+      if ((window.input.isKeyPressed('t') || window.input.isKeyPressed('T')) && this.isGrounded) {
+        this.vy = -this.jumpPower;
+        this.isGrounded = false;
+        
+        // Play jump sound
+        if (window.soundManager) {
+          window.soundManager.play('jump');
+        }
+      }
+    }
+    
+    // Player 4 controls (IJKL)
+    if (this.id === 3) {
       if (window.input.isKeyPressed('j') || window.input.isKeyPressed('J')) {
         this.ax = -this.speed;
       }
       if (window.input.isKeyPressed('l') || window.input.isKeyPressed('L')) {
         this.ax = this.speed;
       }
-      
-      // Jump
-      if ((window.input.isKeyPressed('i') || window.input.isKeyPressed('I') || window.input.isKeyPressed('o') || window.input.isKeyPressed('O')) && this.isGrounded) {
+      if ((window.input.isKeyPressed('i') || window.input.isKeyPressed('I')) && this.isGrounded) {
         this.vy = -this.jumpPower;
         this.isGrounded = false;
+        
+        // Play jump sound
+        if (window.soundManager) {
+          window.soundManager.play('jump');
+        }
       }
     }
   }

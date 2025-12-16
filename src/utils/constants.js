@@ -16,7 +16,8 @@ window.GAME = {
   
   // Game settings
   MAX_PLAYERS: 4,
-  AI_PLAYERS: true,
+  DEFAULT_PLAYERS: 2, // Default number of human players
+  AI_PLAYERS: false, // Disable AI for 4-player multiplayer
   DEBUG: false,
   
   // Timing
@@ -286,13 +287,33 @@ window.INPUT = {
   TAG: ['Tab', 'q', 'Q'],
   PAUSE: ['Escape', 'p', 'P'],
   
-  // Player 2 controls
-  P2_UP: ['i', 'I'],
-  P2_DOWN: ['k', 'K'],
-  P2_LEFT: ['j', 'J'],
-  P2_RIGHT: ['l', 'L'],
-  P2_JUMP: ['o', 'O'],
-  P2_TAG: ['u', 'U'],
+  // Player 1 controls (WASD)
+  P1_LEFT: ['a', 'A'],
+  P1_RIGHT: ['d', 'D'],
+  P1_UP: ['w', 'W'],
+  P1_DOWN: ['s', 'S'],
+  P1_JUMP: [' ', 'w', 'W'],
+  
+  // Player 2 controls (Arrow keys)
+  P2_LEFT: ['ArrowLeft'],
+  P2_RIGHT: ['ArrowRight'],
+  P2_UP: ['ArrowUp'],
+  P2_DOWN: ['ArrowDown'],
+  P2_JUMP: ['Enter', 'ArrowUp'],
+  
+  // Player 3 controls (TFGH)
+  P3_LEFT: ['f', 'F'],
+  P3_RIGHT: ['h', 'H'],
+  P3_UP: ['t', 'T'],
+  P3_DOWN: ['g', 'G'],
+  P3_JUMP: ['r', 'R', 't', 'T'],
+  
+  // Player 4 controls (IJKL)
+  P4_LEFT: ['j', 'J'],
+  P4_RIGHT: ['l', 'L'],
+  P4_UP: ['i', 'I'],
+  P4_DOWN: ['k', 'K'],
+  P4_JUMP: ['o', 'O', 'i', 'I'],
   
   // Mouse
   MOUSE_LEFT: 0,

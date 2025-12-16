@@ -14,7 +14,7 @@ let renderer;
  */
 window.initGame = function() {
   // Initialize input handler
-  window.input = new InputHandler();
+  window.input = new window.InputHandler();
   
   // Use existing global renderer instance
   renderer = window.renderer;
@@ -24,6 +24,14 @@ window.initGame = function() {
     // Create game manager
     gameManager = new GameManager();
     window.gameManager = gameManager;
+    
+    // Resume audio context after user interaction
+    if (window.soundManager) {
+      window.soundManager.resumeAudioContext();
+      // Start background music
+      window.soundManager.play('music');
+    }
+    
     console.log('Multi-Tag Game initialized');
   };
   
@@ -50,6 +58,11 @@ window.startGame = function() {
     // Handle pause
     if (window.input.isKeyPressed('Escape')) {
       gameManager.isPaused = !gameManager.isPaused;
+      
+      // Toggle sound mute
+      if (window.soundManager) {
+        window.soundManager.toggleMute();
+      }
     }
   });
   
