@@ -21,7 +21,7 @@ window.Player = class {
     // Theme and sprite system
     this.characterType = null;
     this.sprite = null;
-    this.currentAnimation = window.ANIM.ANIM_IDLE;
+    this.currentAnimation = window.ANIM.IDLE;
     
     // Color from theme manager
     this.updateColor();
@@ -108,28 +108,29 @@ window.Player = class {
   updateAnimation() {
     if (!this.sprite) return;
     
-    let targetAnimation = window.ANIM.ANIM_IDLE;
+    let targetAnimation = window.ANIMATION.IDLE;
     
     // Determine animation based on state
     if (!this.isGrounded) {
       if (this.vy < 0) {
-        targetAnimation = window.ANIM.ANIM_JUMP;
+        targetAnimation = window.ANIMATION.JUMP;
       } else {
-        targetAnimation = window.ANIM.ANIM_FALL;
+        targetAnimation = window.ANIMATION.FALL;
       }
     } else if (Math.abs(this.vx) > 10) {
-      targetAnimation = window.ANIM.ANIM_WALK;
+      targetAnimation = window.ANIMATION.WALK;
     }
     
     // Special states
     if (this.isTagged) {
-      targetAnimation = window.ANIM.ANIM_TAG;
+      targetAnimation = window.ANIMATION.TAG;
     }
     
     // Play animation if changed
     if (this.currentAnimation !== targetAnimation) {
-      if (window.themeManager.hasAnimation(this.characterType, targetAnimation)) {
-        this.sprite.play(targetAnimation, targetAnimation === window.ANIM.ANIM_IDLE);
+      if (window.themeManager && window.themeManager.hasAnimation && 
+          window.themeManager.hasAnimation(this.characterType, targetAnimation)) {
+        this.sprite.play(targetAnimation, targetAnimation === window.ANIMATION.IDLE);
         this.currentAnimation = targetAnimation;
       }
     }
@@ -216,8 +217,10 @@ window.Player = class {
     this.updateColor();
     
     // Trigger tag animation if available
-    if (tagged && this.sprite && window.themeManager.hasAnimation(this.characterType, window.ANIM.ANIM_TAG)) {
-      this.sprite.play(window.ANIM.ANIM_TAG, false);
+    if (tagged && this.sprite && window.themeManager && 
+        window.themeManager.hasAnimation && 
+        window.themeManager.hasAnimation(this.characterType, window.ANIMATION.TAG)) {
+      this.sprite.play(window.ANIMATION.TAG, false);
     }
   }
 
@@ -235,7 +238,8 @@ window.Player = class {
    * @param {boolean} loop - Whether to loop the animation
    */
   playAnimation(animationName, loop = false) {
-    if (this.sprite && window.themeManager.hasAnimation(this.characterType, animationName)) {
+    if (this.sprite && window.themeManager && window.themeManager.hasAnimation && 
+        window.themeManager.hasAnimation(this.characterType, animationName)) {
       this.sprite.play(animationName, loop);
       this.currentAnimation = animationName;
     }

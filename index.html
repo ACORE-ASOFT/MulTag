@@ -76,5 +76,20 @@
 
     <!-- Level 5: Game loop and initialization (depends on all) -->
     <script src="src/game/main.js"></script>
+    
+    <!-- Initialize game when all scripts are loaded -->
+    <script>
+        // Wait for all scripts to load, then initialize the game
+        window.addEventListener('load', function() {
+            console.log('All scripts loaded, initializing game...');
+            if (window.initGame && window.startGame) {
+                window.initGame();
+                window.startGame();
+                console.log('Game initialization complete');
+            } else {
+                console.error('Game initialization functions not found');
+            }
+        });
+    </script>
 </body>
 </html>

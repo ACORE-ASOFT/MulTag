@@ -19,11 +19,24 @@ window.initGame = function() {
   // Use existing global renderer instance
   renderer = window.renderer;
   
-  // Create game manager
-  gameManager = new GameManager();
-  window.gameManager = gameManager;
+  // Wait for theme manager to be ready before creating game manager
+  const initializeGameManager = () => {
+    // Create game manager
+    gameManager = new GameManager();
+    window.gameManager = gameManager;
+    console.log('Multi-Tag Game initialized');
+  };
   
-  console.log('Multi-Tag Game initialized');
+  // Check if theme manager is ready
+  if (window.themeManager && window.themeManager.isReady()) {
+    initializeGameManager();
+  } else {
+    // Wait for theme manager to initialize
+    setTimeout(() => {
+      console.log('Waiting for theme manager...');
+      initializeGameManager();
+    }, 1000);
+  }
 };
 
 /**
@@ -42,7 +55,7 @@ window.startGame = function() {
   
   // Set draw function
   window.gameLoop.setDraw(function() {
-    renderer.clear('#87CEEB'); // Sky blue background
+    renderer.clear(); // Use default clear or theme-based clear
     gameManager.draw();
   });
   

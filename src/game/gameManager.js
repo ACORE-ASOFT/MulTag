@@ -44,10 +44,9 @@ window.GameManager = class {
       const player = new window.Player(
         positions[i].x,
         positions[i].y,
-        colors[i]
+        i, // playerIndex
+        i >= 2 // isAI - first 2 are human, rest are AI
       );
-      player.id = i;
-      player.isAI = i >= 2; // First 2 are human, rest are AI
       player.score = 0;
       this.players.push(player);
     }
@@ -341,8 +340,9 @@ window.GameManager = class {
           'AI',
           player.x + player.width / 2 - 10,
           player.y - 10,
-          '12px Arial',
-          '#FFFFFF'
+          '#FFFFFF',
+          12,
+          'Arial'
         );
       }
     });
@@ -357,8 +357,9 @@ window.GameManager = class {
       `Time: ${Math.ceil(this.roundTime)}s`,
       20,
       30,
-      '24px Arial',
-      '#FFFFFF'
+      '#FFFFFF',
+      24,
+      'Arial'
     );
 
     // Draw scores
@@ -368,8 +369,9 @@ window.GameManager = class {
         `P${index + 1}: ${player.score} ${player.isTagged ? '[TAGGED]' : ''}`,
         20,
         y,
-        '18px Arial',
-        player.isTagged ? '#FF0000' : '#FFFFFF'
+        player.isTagged ? '#FF0000' : '#FFFFFF',
+        18,
+        'Arial'
       );
     });
 
@@ -379,8 +381,9 @@ window.GameManager = class {
         'GAME OVER!',
         window.GAME.CANVAS_WIDTH / 2 - 100,
         window.GAME.CANVAS_HEIGHT / 2,
-        '48px Arial',
-        '#FF0000'
+        '#FF0000',
+        48,
+        'Arial'
       );
     }
   }
